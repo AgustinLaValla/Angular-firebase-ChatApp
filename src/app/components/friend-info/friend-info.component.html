@@ -1,0 +1,12 @@
+<div fxLayout="row" fxLayoutAlign="center" *ngIf="isUserSelected && currentUser">
+    <div fxLayout="column" fxLayoutAlign="center center">
+        <img class="centered-and-cropped" src="{{currentUser.photoURL}}" width="150px" height="150px">
+        <h3>Nickname: {{ currentUser.displayName }}</h3>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="center" *ngIf="isUserSelected">
+    <button  mat-icon-button color="primary"><mat-icon>call</mat-icon>&nbsp;&nbsp;</button >
+    <button (click)="closeCall()" mat-icon-button color="primary"><mat-icon>close</mat-icon>&nbsp;&nbsp;</button>
+</div>
+<p *ngIf="!isUserSelected">Please, select a friend to chat with!</p>

@@ -1,0 +1,24 @@
+<mat-accordion multi="true">
+    
+    <mat-expansion-panel hiddeToggle="true" expanded="true">
+        <mat-expansion-panel-header>
+            Currently chatting with
+        </mat-expansion-panel-header>
+        <app-friend-info></app-friend-info>
+    </mat-expansion-panel>
+                                                                   
+    <mat-expansion-panel hiddeToggle="true" expanded="false">
+        <mat-expansion-panel-header>
+            Group details
+        </mat-expansion-panel-header>
+        <app-group-menu></app-group-menu>
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel hiddeToggle="true" expanded="true">
+        <mat-expansion-panel-header>
+          Notifications
+        </mat-expansion-panel-header>
+        <app-notifications></app-notifications>
+    </mat-expansion-panel>
+    
+</mat-accordion>

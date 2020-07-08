@@ -1,0 +1,25 @@
+.main-container{
+    background: #e5e5e5;
+    min-height: 100vh;
+}
+
+.card-container { 
+    width: 400px;
+    text-align: center;
+    padding: 15px;
+}
+
+a{
+    cursor: pointer;
+    color: blue;
+}
+
+.input-width { 
+    width: 80%;
+}
+
+.content { 
+    max-height: calc(100vh);
+    overflow-y: hidden;
+    overflow-x: hidden;
+}

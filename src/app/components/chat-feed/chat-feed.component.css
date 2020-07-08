@@ -1,0 +1,229 @@
+.footer { 
+    height: 50px;
+}
+
+.content { 
+    max-height: calc(100vh - 145px); /* 80px header + 40px footer = 120 */
+    overflow-y: scroll;
+}
+
+.content::-webkit-scrollbar { 
+    display: none;
+}
+#chat{
+    width: 100%;
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+    background: #f7f8fb;
+    font-family: 'Open Sans','Nunito', sans-serif ;
+    font-size: 15px;
+    line-height: 22px;
+    /* padding: 0 150px 150px 150px; */
+    overflow: scroll;
+}
+
+#chat::-webkit-scrollbar { 
+    display: none;
+}
+
+#chat .bubble{ 
+    margin-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+#chat .bubble:before #chat .bubble:after { 
+    content: "";
+    /* height: auto; */
+    display: inline-block;
+    /* display: table; */
+}
+#chat .bubble:after { 
+    clear: both;
+}
+#chat .bubble .content { 
+    background: #ffffff;
+    box-shadow: 0px 9px 30px 0px rgba(44, 46, 73, 0.08);
+    border-radius: 26px 26px 26px 2px;
+    max-width: 80%;
+}
+#chat .bubble .content::before, #chat .bubble .content:after { 
+    /* display: table; */
+    content: '';
+}
+#chat .bubble .content:after {
+    clear: both;
+}
+#chat .bubble .content .avatar { 
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    overflow: hidden;
+    float: left;
+    margin: 2em;
+}
+#chat .bubble .content .avatar img { 
+    height: 100%;
+}
+#chat .bubble.content .copy { 
+    font-size: 1.1em;
+    line-height: 1.75;
+    color: #727678;
+    padding: 1.5em;
+    margin: 0;
+}
+#chat .bubble.client {
+    direction: rtl;
+}
+.exeption-element { 
+    direction: ltr;
+    text-align: right;
+}
+#chat .bubble.client .content {
+    background: #d6f7ff;
+    border-radius: 26px 26px 2px 26px;
+    text-align: right;
+    direction: ltr;
+}
+#chat .bubble.client .content .avatar { 
+    float: right;
+}
+#chat .bubble.client .time { 
+    text-align: right;
+    direction: ltr;
+}
+
+#chat .bubble.attachment { 
+    width: 100%;
+    position: relative;
+    margin: 5em 0;
+    clear: both;
+}
+
+#chat .bubble.attachment .preview { 
+    width: 15em;
+    border-radius: 0.5em;
+    overflow: hidden;
+    float: right;
+    box-shadow: 0px 9px 30px 0px rgba(50, 56, 107, 0.25);
+    position: absolute;
+    left: 2em;
+    bottom: 2em;
+}
+#chat .bubble.attachment .preview img {
+    width: 100%;
+}
+#chat .bubble.attachment .content { 
+    max-width: 80%;
+    /* width: 100%; */
+    min-height: 22em;
+    border-radius: 26px 26px 2px 26px;
+    padding: 2em 5em 2em 20em;
+}
+#chat .bubble.attachment .content .title { 
+    font-size: 21px;
+    color: #393f42;
+    letter-spacing: 0px;
+    font-weight: 400;
+}
+#chat .bubble.attachment .content .description { 
+    font-size: 1.1em;
+    color: #727678;
+    line-height: 1.75;
+}
+#chat .bubble.attachment .content .buttons_wrapper { 
+    margin-top: 3em;
+}
+#chat .bubble.attachment .content .buttons_wrapper .button { 
+    margin-right: 1em;
+}
+#chat .bubble.attachment .icon { 
+    position: absolute;
+    right: 2em;
+    top: 2em;
+}
+#chat .bubble.attachment .time { 
+    text-align: right;
+    direction: ltr;
+}
+#chat #input { 
+    width: 100%;
+    position: relative;
+}
+#chat #input .avatar { 
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    overflow: hidden;
+    float: left;
+    position: absolute;
+    left: 2em;
+    top: 2em;
+}
+#chat #input .avatar img { 
+    height: 100%;
+}
+#chat #input textarea { 
+    background: #ffffff;
+    box-shadow: 0px 9px 30px 0px rgba(44, 46, 73, 0.08);
+    border-radius: 26px 26px 26px 2px;
+    border: none;
+    width: 100%;
+    height: 9em;
+    padding: 2.5em 2em 2em 6em;
+    font-size: 1.1em;
+}
+.sk-folding-cube { 
+    margin: 20px auto;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    transform: rotateZ(45deg);
+}
+.sk-folding-cube .sk-cube { 
+    float: left;
+    width: 50%;
+    height: 50%;
+    position: relative;
+    transform: scale(1.1);
+}
+.sk-folding-cube .sk-cube:before { 
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    animation: sk-foldCubeAngle 2.4s infinite linear both;
+}
+.sk-folding-cube .sk-cube2 { 
+    transform: scale(1.1) rotate(90deg);
+}
+.sk-folding-cube .sk-cube3 { 
+    transform: scale(1.1) rotateZ(180deg);
+}
+.sk-folding-cube .sk-cube4 { 
+    transform: scale(1.1) rotateZ(270deg);
+}
+.sk-folding-cube .sk-cube2:before { 
+    animation-delay: 0.3s;
+}
+ .sk-folding-cube .sk-cube3:before { 
+     animation-delay: 0.6s;
+ }
+ .sk-folding-cube .sk-cube4:before { 
+     animation-delay: 0.9s;
+ }
+@keyframes sk-foldCubeAngle { 
+     0%, 10% { 
+         transform: perspective(140px) rotateX(-180deg);
+         opacity: 0;
+     }25%, 75% { 
+         transform: perspective(140px) rotateX(0deg);
+         opacity: 1;
+     }90%, 100% {
+         transform: perspective(140px) rotateY(180deg);
+      }
+
+ }

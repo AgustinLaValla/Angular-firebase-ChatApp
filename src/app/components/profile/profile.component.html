@@ -1,0 +1,44 @@
+<div *ngIf="user">
+    <div fxLayout="row" fxLayoutAlign="center">
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <img class="centered-and-cropped" src="{{user.photoURL}}" width="150px" height="150px">
+            <h3>Nickname: {{ user.displayName }}</h3>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="center">
+
+        <mat-form-field *ngIf="nickNameEdit">
+            <input matInput placeholder="Enter new nick name" [(ngModel)]="newNickName" type="text">
+        </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="center">
+        <span matTooltip="Do it">
+            <button *ngIf="nickNameEdit" mat-icon-button (click)="updateName()">
+                <mat-icon color="primary">check</mat-icon>
+            </button>
+        </span>
+        <span matTooltip="Cancel">
+            <button *ngIf="nickNameEdit" mat-icon-button (click)="editName()">
+                <mat-icon color="warm">cancel</mat-icon>
+            </button>
+        </span>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center">
+        <span matTooltip="Change your nickname" *ngIf="!nickNameEdit">
+            <button mat-mini-fab color="primary" (click)="editName()">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </span>
+        <span style="width: 10px;"></span>
+        <span matTooltip="Change your image" *ngIf="!nickNameEdit">
+            <button (click)="fileInput.click()" mat-mini-fab color="primary">
+                <mat-icon>assignment_ind</mat-icon>
+            </button>
+        </span>
+        <input type="file" #fileInput (change)="chooseImage($event)" style="display: none;">
+        <mat-spinner *ngIf="spinnerToggle" [diameter]=17></mat-spinner>
+    </div>
+
+</div>

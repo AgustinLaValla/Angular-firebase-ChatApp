@@ -1,0 +1,13 @@
+<app-navbar></app-navbar>
+<div fxLayout="row" fxLayoutGap='20px' style="background:#f7f8fb; -webkit-app-region:no-drag; -webkit-user-select: none;">
+    <div fxFlex="25%">
+        <app-sidebar></app-sidebar>
+    </div>
+    <div fxFlex="50%">
+        <app-chat-feed *ngIf="chatFeed" [chatType]="chatType"></app-chat-feed>
+        <app-chat-feed *ngIf="chatGroupFeed" [chatType]="chatType"></app-chat-feed>
+    </div>
+    <div fxFlex="25%">
+        <app-activity></app-activity>
+    </div>
+</div>

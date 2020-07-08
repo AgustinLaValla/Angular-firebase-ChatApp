@@ -1,0 +1,42 @@
+<div class="content">
+    <div fxLayout="row" fxLayoutAlign="center">
+
+
+        <mat-form-field *ngIf="showAdd">
+            <input matInput placeholder="Enter new group name" [(ngModel)]="groupName" type="text">
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutAlign="center">
+            <span matTooltip="Create group">
+                <button *ngIf="showAdd" mat-icon-button (click)="createGroup()">
+                    <mat-icon color="primary">check</mat-icon>
+                </button>
+            </span>
+            <span matTooltip="Cancel">
+                <button *ngIf="showAdd" mat-icon-button (click)="showAdd = !showAdd">
+                    <mat-icon color="warm">cancel</mat-icon>
+                </button>
+            </span>
+
+            <span matTooltip="Create group">
+                <button (click)="addGroup()" mat-mini-fab color="primary" *ngIf="!showAdd">
+                    <mat-icon>add</mat-icon>
+                </button>&nbsp;&nbsp;
+            </span>
+
+            <span matTooltip="Refresh">
+                <button mat-mini-fab color="primary" *ngIf="!showAdd">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+            </span>
+        </div>
+    </div>
+    
+    <mat-list class="pointer">
+        <mat-list-item *ngFor="let group of myGroups" (click)="openGroup(group)">
+            <img matListAvatar src="{{ group.groupPic }}">
+            <h3 matLine>{{ group.groupName }}</h3>
+        </mat-list-item>
+    </mat-list>
+
+</div>

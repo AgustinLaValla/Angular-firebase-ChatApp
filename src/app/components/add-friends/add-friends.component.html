@@ -1,0 +1,22 @@
+<mat-form-field style="width: 80%">
+    <input matInput placeholder="Enter Nick Name" (keyup)="instantSearch($event)">
+</mat-form-field>
+
+<mat-list>
+    <mat-list-item *ngFor="let user of users; let i = index">
+        <img matListAvatar src="{{ user.photoURL }}">
+        <h3 matLine>{{ user.displayName }}</h3>
+        <p matLine *ngIf="isRequested[i]">
+            <span>You have a request from this user</span>
+        </p>
+        <p matLine *ngIf="isSent[i]">
+            <span>Requested</span>
+        </p>
+        <p matLine *ngIf="isFriends[i]">
+            <span>Friends</span>
+        </p>
+        <button mat-icon-button (click)="addFriend(user)" *ngIf="canShow(i)">
+            <mat-icon mat-list-icon color="primary">add_circle</mat-icon>
+        </button>
+    </mat-list-item>
+</mat-list>

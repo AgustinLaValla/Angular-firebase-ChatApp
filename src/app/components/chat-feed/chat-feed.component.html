@@ -1,0 +1,50 @@
+<div class="content" #scrollMe scrollable (scrollPosition)="scrollHandler($event)" >
+    <div class="sk-folding-cube" *ngIf="loadingSpinner">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+    </div>
+    <div id="chat">
+     
+        <p *ngIf="allLoaded">No more messages allowed</p>
+        <div *ngFor="let msg of messages; let i = index" [ngClass]="chooseClass(msg)">
+            <!-- For picture messages -->
+            <div class="preview" *ngIf="isPicMsg">
+                <img src="{{ pictureMessage }}">
+            </div>
+            <div class="content" *ngIf="isPicMsg">
+                <h2 class="title" *ngIf="msg.sentby == MyId">
+                    you sent a picture
+                </h2>
+                <h2 class="title" *ngIf="msg.sentby != MyId && chatType === 'personalChat'">
+                    {{ currentChatUser.displayName }} sent a picture 
+                </h2>
+                <h2 class="title" *ngIf="msg.sentby != MyId && chatType === 'groupChat'">
+                    {{ msg.sentby }} sent a picture 
+                </h2>
+                <div class="description">Picture messages will be displayed in small sizes previews</div>
+            </div>
+
+            <!-- For text message -->
+            <div class="content" *ngIf="!isPicMsg">
+                <div class="avatar" *ngIf="msg.sentby != MyId && chatType === 'personalChat'">
+                    <img src="{{ currentChatUser.photoURL }}">
+                </div>
+                <div class="avatar" *ngIf="msg.sentby == MyId && chatType === 'personalChat'">
+                    <img src="{{ MyAvatar }}" alt="">
+                </div>
+                <p class="sender" *ngIf="chatType === 'groupChat'"><strong>{{ msg.sentby}}</strong> says...</p>
+                <p class="copy">{{ msg.message }}</p>
+            </div>
+            <p *ngIf="msg && msg.timestamp" [ngClass]="{'exeption-element': msg.sentby == MyId}">{{ getDateFromNow(msg.timestamp.seconds) }}
+            </p>
+        </div>
+    </div>
+    <mat-spinner *ngIf="pictureSpinner"></mat-spinner>
+</div>
+
+<footer class="footer">
+    <app-footer *ngIf="chatType === 'personalChat'"></app-footer>
+    <app-group-footer *ngIf="chatType === 'groupChat'"></app-group-footer>
+</footer>

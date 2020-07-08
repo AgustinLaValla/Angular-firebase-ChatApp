@@ -1,0 +1,7 @@
+<mat-list *ngIf="showNotifications">
+    <mat-list-item *ngFor="let msg of myNotifications">
+        <img matListAvatar src="{{ msg.senderPic }}">
+        <h3 matLine>{{ msg.senderName }} sent you a message</h3>
+        <p matLine>has sent you a message</p>
+    </mat-list-item>
+</mat-list>

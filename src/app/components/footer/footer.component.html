@@ -1,0 +1,12 @@
+<mat-form-field class="search-width">
+    <input type="text" matInput placeholder="Say something" [(ngModel)]="newMessage" (keydown)="submit($event)">
+</mat-form-field>
+<button mat-icon-button (click)="addMessage()">
+    <mat-icon color="primary">send</mat-icon>
+</button>
+<span matTooltip="Send image">
+    <button (click)="fileInput.click()" mat-icon-button color="primary">
+        <mat-icon>assignment_ind</mat-icon>
+    </button>
+</span>
+<input type="file" #fileInput (change)="sendImage($event.target.files[0])" style="display: none;">

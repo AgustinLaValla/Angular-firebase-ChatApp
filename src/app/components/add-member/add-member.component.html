@@ -1,0 +1,42 @@
+<!-- <div class="content"> -->
+<div class="sk-folding-cube" *ngIf="loadingSpinner">
+    <div class="sk-cube1 sk-cube"></div>
+    <div class="sk-cube2 sk-cube"></div>
+    <div class="sk-cube5 sk-cube"></div>
+    <div class="sk-cube3 sk-cube"></div>
+</div>
+<!-- </div> -->
+
+<!---------------------------- ADD MEMBER LIST ---------------------------->
+<mat-list *ngIf="data.dialogType === 'addMember'">
+    <mat-list-item *ngFor="let friend of myFriends; let i = index">
+        <img matListAvatar src="{{ friend.photoURL }}">
+        <h3 matLine>{{ friend.displayName }}</h3>
+        <p matLine *ngIf="isMember[i]">
+            Member of this group
+        </p>
+        <button mat-icon-button (click)="addFriend(friend)" *ngIf="!isMember[i]">
+            <mat-icon mat-list-icon color="primary">add_circle</mat-icon>
+        </button>
+    </mat-list-item>
+</mat-list>
+
+<!---------------------------- REMOVE MEMBER LIST -------------------------->
+<mat-list *ngIf="data.dialogType === 'removeMember'">
+    <mat-list-item *ngFor="let user of members; let i = index">
+        <img matListAvatar src="{{ user.photoURL }}">
+        <h3 matLine>{{ user.displayName }}</h3>
+        <button mat-icon-button (click)="removeFriend(user)" *ngIf="user.email != currentGroup.creator">
+            <mat-icon color="warn">delete</mat-icon>
+        </button>
+    </mat-list-item>
+</mat-list>
+
+<!---------------------------- GROUP INFO ---------------------------------->
+<mat-list *ngIf="data.dialogType === 'groupInfo'">
+    <mat-list-item *ngFor="let user of members; let i = index">
+        <img matListAvatar src="{{ user.photoURL }}">
+        <h3 matLine>{{ user.displayName }}</h3>
+        <p matLine *ngIf="user.email == currentGroup.creator">Owner</p>
+    </mat-list-item>
+</mat-list>
