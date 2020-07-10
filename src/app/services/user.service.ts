@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
@@ -11,6 +10,7 @@ import { IUser } from '../interface/user.interface';
 import { Observable } from 'rxjs';
 import { Status } from '../interface/status.interface';
 import { Friend } from '../interface/friend.interface';
+import { Request } from '../interface/request.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,6 @@ export class UserService {
   private currentUser: firebase.User;
 
   constructor(
-    private afa: AngularFireAuth,
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
     private authService: AuthService
@@ -48,10 +47,10 @@ export class UserService {
 
   async updateProfilePic(file): Promise<void> {
 
-    await this.storage.upload('profilepics/' + this.afa.auth.currentUser.uid, file);
-    const downloadURL = await this.storage.ref('profilepics/' + this.afa.auth.currentUser.uid).getDownloadURL().toPromise();
-    await this.afs.doc('users/' + this.afa.auth.currentUser.uid).update({ photoURL: downloadURL });
-    await this.afa.auth.currentUser.updateProfile({ photoURL: downloadURL });
+    await this.storage.upload('profilepics/' + this.currentUser.uid, file);
+    const downloadURL = await this.storage.ref('profilepics/' + this.currentUser.uid).getDownloadURL().toPromise();
+    await this.afs.doc('users/' + this.currentUser.uid).update({ photoURL: downloadURL });
+    await this.currentUser.updateProfile({ photoURL: downloadURL });
   }
 
   getAllUsers(): Observable<IUser[]> {
@@ -60,20 +59,17 @@ export class UserService {
     );
   }
 
-  getUsers(request: any[]) {
-    return this.afs.collection('users').valueChanges().pipe(
+  getUsers(request: Request[]) {
+    return this.afs.collection<IUser>('users').valueChanges().pipe(
       map(users => {
-        let senderEmails = [];
-        request.map(req => senderEmails.push(req['sender']))
-        let usersReq = [];
-        for (let i = 0; i < users.length; i++) {
-          for (let f = 0; f < senderEmails.length; f++) {
-            if (users[i]['email'] == senderEmails[f]) {
-              usersReq.push(users[i]);
-            }
+        let usersReq: IUser[] = [];
+        users.forEach((user) => {
+          const exist: Request = request.find((req) => req.sender === user.email);
+          if (!isNullOrUndefined(exist)) {
+            usersReq.push(user);
           }
-        }
-        return usersReq;
+        });
+        return usersReq
       })
     )
   }
@@ -88,7 +84,7 @@ export class UserService {
     let friendStatus: Status[] = [];
     users.map(async (user, idx) => {
       const status = await this.afs.collection<Status>('status').ref.where('email', '==', user.email).get();
-        friendStatus.push(status.docs[0].data() as Status);
+      friendStatus.push(status.docs[0].data() as Status);
     });
     return friendStatus;
   };

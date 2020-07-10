@@ -50,7 +50,6 @@ export class AddFriendsComponent implements OnInit {
         await this.friendsService.getMyFriends();
       }),
       switchMap(() => this.friendsService.friendProfileTrigger$.pipe(
-        tap(console.log),
         filter((user) => user === 'Exists'),
         mergeMap(() => this.friendsService.getFriendList().pipe(
           map((friends) => this.myFriends = friends),
@@ -74,19 +73,21 @@ export class AddFriendsComponent implements OnInit {
 
   areFriends(friends: Friend[]) {
     let flag = 0;
-    console.log({users:this.userBackUp, friends});
     this.userBackUp.map((userElement, i) => {
-      friends.forEach(friendElement => userElement.email === friendElement.email ? flag = 1 : flag = 0);
+      friends.forEach(friendElement => userElement.email === friendElement.email ? flag = 1 : null);
       flag === 1 ? this.isFriends[i] = true : this.isFriends[i] = false;
+      flag = 0;
     });
+    
   };
 
   userRequestedMe(requests: Request[]) {
     let flag = 0;
     this.myRequest = requests;
     this.userBackUp.forEach((userElement, i) => {
-      requests.forEach((reqElement) => userElement.email == reqElement['sender'] ? flag = 1 : flag = 0);
+      requests.forEach((reqElement) => userElement.email == reqElement['sender'] ? flag = 1 : null);
       flag === 1 ? this.isRequested[i] = true : this.isRequested[i] = false;
+      flag = 0;
     });
   };
 
@@ -94,7 +95,7 @@ export class AddFriendsComponent implements OnInit {
     this.mySentRequest = requests;
     let flag = 0;
     this.userBackUp.forEach((userElement, i) => {
-      requests.forEach((reqElement) => userElement.email == reqElement['receiver'] ? flag = 1 : flag = 0)
+      requests.forEach((reqElement) => userElement.email == reqElement['receiver'] ? flag = 1 : null);
       flag === 1 ? this.isSent[i] = true : this.isSent[i] = false
       flag = 0;
     });
@@ -102,7 +103,6 @@ export class AddFriendsComponent implements OnInit {
 
   showMembersResquests() {
     this.friendsService.friendProfileTrigger$.pipe(
-      tap(console.log),
       filter((user) => user === 'Nothing'),
       switchMap(() => this.requestService.getMyRequest().pipe(
         tap((requests) => {

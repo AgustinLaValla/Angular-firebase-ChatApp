@@ -86,7 +86,7 @@ export class RequestService {
 
   async deleteRequest(req: Friend) {
     const requestColl = await this.requestRef.ref.where('sender', '==', req.email).where('receiver', '==', this.currentUser.email).get();
-    requestColl.docs[0].ref.delete();
+    await requestColl.docs[0].ref.delete();
   };
 
   getSentRequests(): Observable<Request[]> {

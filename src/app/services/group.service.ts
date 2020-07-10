@@ -41,6 +41,18 @@ export class GroupService {
     ).subscribe();
   };
 
+    //Entering a group
+    enterGroup(group) {
+      if (group != 'closed') {
+        this.currentGroup = group;
+        this.enteredGroup.next(true);
+      } else {
+        this.currentGroup = '';
+        this.enteredGroup.next(false);
+      }
+    }
+  
+
   async createGroup(groupName: string) {
 
     const group = await this.afs.collection('groups').add({
@@ -82,16 +94,6 @@ export class GroupService {
     }
   }
 
-  //Entering a group
-  enterGroup(group) {
-    if (group != 'closed') {
-      this.currentGroup = group;
-      this.enteredGroup.next(true);
-    } else {
-      this.currentGroup = '';
-      this.enteredGroup.next(false);
-    }
-  }
 
   async addMember(user: IUser) {
     await this.afs.collection('groups').doc(this.currentGroup.id).collection('members').doc(user.id).set(user);
@@ -161,6 +163,7 @@ export class GroupService {
 
     await batch.commit();
 
+    this.enterGroup('closed');
   }
 
 }

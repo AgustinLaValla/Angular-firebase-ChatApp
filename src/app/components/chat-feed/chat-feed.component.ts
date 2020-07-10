@@ -181,7 +181,6 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
 
   chooseClass(msg: any) {
     this.MyId = this.authService.currentUserDetails().email;
-    console.log(this.MyId);
     if (msg.sentby != this.MyId && msg.message.includes('picMsg')) {
       this.isPicMsg = true;
       this.pictureMessage = msg.message.substring(6)

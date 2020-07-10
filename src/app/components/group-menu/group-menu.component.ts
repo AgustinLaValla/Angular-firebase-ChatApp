@@ -78,7 +78,6 @@ export class GroupMenuComponent implements OnInit, OnDestroy {
   }
 
   async onFileInput(file:File) {
-    console.log(file)
     if(file && file.type.indexOf('image') < 0) {
       return this.snack.open('Only image files are allowed', 'OK', {duration:3000});
     };

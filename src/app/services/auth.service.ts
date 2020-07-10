@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { constants } from '../constants/constants';
 import { isNullOrUndefined } from 'util';
 import { Usercreds } from '../interface/usercreds.interface';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, filter } from 'rxjs/operators';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 
@@ -16,7 +16,7 @@ export class AuthService {
 
   public authState: firebase.User;
 
-  public currentUser = new BehaviorSubject<firebase.User>(this.afa.auth.currentUser);
+  public currentUser = new BehaviorSubject<firebase.User>(this.authState);
   public isAuth = new Subject<boolean>();
 
   constructor(
@@ -28,6 +28,7 @@ export class AuthService {
 
   initListener() {
     return this.afa.authState.pipe(
+      filter(user => !isNullOrUndefined(user)),
       map(user => this.authState = user),
       tap((user) => {
         if (!isNullOrUndefined(user)) this.currentUser.next(user);
@@ -42,7 +43,7 @@ export class AuthService {
 
   //Return details of singed in user
   currentUserDetails(): firebase.User {
-    return this.afa.auth.currentUser;
+    return this.authState;
   }
 
   get currentUserId(): string {
@@ -107,7 +108,7 @@ export class AuthService {
     try {
       this.router.navigate(['/login']);
       await this.setUserStatus('offline');
-      setTimeout(async () => await this.afa.auth.signOut(), 2500);
+      setTimeout(async () => await this.afa.auth.signOut(), 1000);
     } catch (error) {
       console.log(error);
     };
