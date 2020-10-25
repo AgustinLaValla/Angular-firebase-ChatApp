@@ -6,4 +6,5 @@
             <button (click)="logout()" mat-flat-button color="primary">Logout</button>
         </span>
     </mat-toolbar>
+    <mat-progress-bar *ngIf="uiService.progressBar" mode="indeterminate"></mat-progress-bar>
 </div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import { Subject, BehaviorSubject, of, Observable } from 'rxjs';
+import { Subject, of, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { filter, map, tap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';

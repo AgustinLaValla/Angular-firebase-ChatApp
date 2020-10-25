@@ -40,7 +40,6 @@ export class MessagesService {
   currentUserStateListener() {
     this.authService.currentUser.pipe(
       filter(user => !isNullOrUndefined(user)),
-      tap(console.log),
       map(user => this.currentUser = user)
     ).subscribe();
   };

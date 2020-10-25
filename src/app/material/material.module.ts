@@ -1,7 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule, MatCheckboxModule, MatLineModule, MatListModule, MatExpansionModule, MatToolbarModule, MatCardModule, 
-    MatFormFieldModule, MatInputModule, MatIconModule, MatDialogModule, MatTooltipModule, MatTabsModule, MatSnackBarModule, MatProgressSpinnerModule } 
+import {
+    MatButtonModule,
+    MatCheckboxModule,
+    MatLineModule,
+    MatListModule,
+    MatExpansionModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatTabsModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule
+}
     from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -21,11 +37,12 @@ const MaterialComponents = [
     MatTabsModule,
     MatSnackBarModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatProgressBarModule
 ]
 
 @NgModule({
-    imports: [MaterialComponents ,CommonModule, FlexLayoutModule],
+    imports: [MaterialComponents, CommonModule, FlexLayoutModule],
     exports: [MaterialComponents, FlexLayoutModule],
 })
 export class MaterialModule { }

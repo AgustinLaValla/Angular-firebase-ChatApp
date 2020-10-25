@@ -22,7 +22,6 @@ export class NotificationsService {
     currentUserStateListener() {
         this.authService.currentUser.pipe(
             filter(user => user !== null && user !== undefined),
-            tap(console.log),
             map(user => this.currentUser = user)
         ).subscribe();
     };

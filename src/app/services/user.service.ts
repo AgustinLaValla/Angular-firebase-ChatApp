@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { Status } from '../interface/status.interface';
 import { Friend } from '../interface/friend.interface';
 import { Request } from '../interface/request.interface';
+import { UiService } from './ui.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class UserService {
   constructor(
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
-    private authService: AuthService
+    private authService: AuthService,
+    private uiService: UiService
   ) {
     this.currentUserStateListener();
   }
@@ -36,20 +38,23 @@ export class UserService {
   };
 
   async updateName(new_name: string): Promise<void> {
-
+    this.uiService.progressBar = true
     try {
       await this.authService.afa.auth.currentUser.updateProfile({ displayName: new_name });
       await this.afs.doc('users/' + this.currentUser.uid).update({ displayName: new_name });
+      this.uiService.progressBar = false
     } catch (error) {
-      console.log(error);
+      this.uiService.progressBar = false;
     }
   }
 
   async updateProfilePic(file): Promise<void> {
 
+    this.uiService.progressBar = true;
     await this.storage.upload('profilepics/' + this.currentUser.uid, file);
     const downloadURL = await this.storage.ref('profilepics/' + this.currentUser.uid).getDownloadURL().toPromise();
     await this.afs.doc('users/' + this.currentUser.uid).update({ photoURL: downloadURL });
+    this.uiService.progressBar = false;
     await this.currentUser.updateProfile({ photoURL: downloadURL });
   }
 
@@ -83,13 +88,11 @@ export class UserService {
 
 
   async getUsersStatus(users: Array<Friend | IUser>) {
-    console.log({users})
     let friendStatus: Status[] = [];
     users.map(async (user, idx) => {
       const status = await this.afs.collection<Status>('status').ref.where('email', '==', user.email).get();
       friendStatus.push(status.docs[0].data() as Status);
     });
-    console.log({friendStatus});
     return friendStatus;
   };
 

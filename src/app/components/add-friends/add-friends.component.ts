@@ -81,7 +81,6 @@ export class AddFriendsComponent implements OnInit, OnDestroy {
 
   setTotalUsersListener() {
     this.totalUsersSub$ = this.userService.getTotalUsers().pipe(
-      tap(console.log),
       map(total => this.totalUsers = total)
     ).subscribe();
   }

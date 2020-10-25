@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { filter, map, tap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
 import { Subscription } from 'rxjs';
+import { UiService } from 'src/app/services/ui.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,12 +17,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public nickNameEdit: boolean = false;;
   public newNickName: string;
   public selectedFile: FileList;
-  public spinnerToggle: boolean = false;
   private currentUserSub$ = new Subscription();
 
   constructor(
     private userService: UserService, 
-    private authService: AuthService
+    private authService: AuthService,
+    private uiService: UiService
   ) {
     this.currentUserListener();
   }
@@ -30,10 +31,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   currentUserListener() {
     this.currentUserSub$ = this.authService.currentUser.pipe(
-      tap(() => this.spinnerToggle = true),
+      tap(() => this.uiService.progressBar = true),
       filter(user => !isNullOrUndefined(user)),
       map(user => this.user = user),
-      tap(() => this.spinnerToggle = false)
+      tap(() => this.uiService.progressBar = false)
     ).subscribe();
   };
 
@@ -42,23 +43,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   async updateName() {
-    this.spinnerToggle = true;
     try {
       await this.userService.updateName(this.newNickName);
-      this.spinnerToggle = false;
+      this.uiService.progressBar = false;
       this.editName();
 
     } catch (error) {
-      console.log(error); this.spinnerToggle = false;
+      this.uiService.progressBar = false;
     };
   };
 
   chooseImage(event) {
-    this.spinnerToggle = true;
     this.selectedFile = event.target.files;
     if (this.selectedFile.item(0)) {
       this.userService.updateProfilePic(this.selectedFile.item(0));
-      this.spinnerToggle = false;
     };
   };
 
