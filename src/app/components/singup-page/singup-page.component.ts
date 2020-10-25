@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
-import { Usercreds } from 'src/app/interface/usercreds.interface';
-import { isNullOrUndefined } from 'util';
+
 
 @Component({
   selector: 'app-singup-page',

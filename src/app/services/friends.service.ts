@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase';
 import { Subject, BehaviorSubject, of, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
 import { Friend } from '../interface/friend.interface';
 import { IUser } from '../interface/user.interface';
@@ -16,12 +15,14 @@ export class FriendsService {
 
   public friendsCollection: AngularFirestoreCollection
   public friendsCollTrigger = new Subject<string>();
-  public friendProfileTrigger$ = new BehaviorSubject<string>('Exist');
   public docId: string;
 
   private currentUser: firebase.User;
 
-  constructor(private authService: AuthService, private afs: AngularFirestore) {
+  constructor(
+    private authService: AuthService,
+    private afs: AngularFirestore
+  ) {
     this.currentUserStateListener();
     this.friendsCollection = this.afs.collection('friends');
   }
@@ -33,16 +34,17 @@ export class FriendsService {
     ).subscribe();
   };
 
-  async getMyFriends(): Promise<BehaviorSubject<string>> {
 
-    if (isNullOrUndefined(this.currentUser)) return;
-    const snap = await this.friendsCollection.ref.where('email', '==', this.currentUser.email).get();
-    if (!snap.empty) {
-      this.docId = snap.docs[0].id;
-      this.friendProfileTrigger$.next('Exists');
-    } else {
-      this.friendProfileTrigger$.next('Nothing');
-    };
+  getMyFriends(): Observable<Friend[]> {
+
+    return this.currentUser
+      ?
+      this.friendsCollection
+        .doc(this.currentUser.uid)
+        .collection<Friend>('myfriends')
+        .valueChanges()
+      :
+      of([]);
   }
 
 

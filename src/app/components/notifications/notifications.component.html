@@ -1,7 +1,15 @@
 <mat-list *ngIf="showNotifications">
-    <mat-list-item *ngFor="let msg of myNotifications">
-        <img matListAvatar src="{{ msg.senderPic }}">
-        <h3 matLine>{{ msg.senderName }} sent you a message</h3>
-        <p matLine>has sent you a message</p>
+    <mat-list-item 
+        *ngFor="let notification of myNotifications"
+        (click)="handleClick(notification)"
+        class="pointer"
+    >
+        <img matListAvatar src="{{ notification.senderPic }}">
+        <span *ngIf="notification.type === 'message'" style="margin-left: 5px;">
+            {{ notification.senderName }} sent you a message
+        </span>
+        <span *ngIf="notification.type === 'group'" style="margin-left: 5px;">
+            {{ notification.senderName }} has added you to the group: {{notification.groupName}}
+        </span>   
     </mat-list-item>
 </mat-list>

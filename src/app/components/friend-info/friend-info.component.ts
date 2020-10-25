@@ -12,13 +12,13 @@ import { IUser } from 'src/app/interface/user.interface';
 })
 export class FriendInfoComponent implements OnInit, OnDestroy {
 
-  public currentUser: IUser;
+  public currentUser: Partial<IUser>;
   public isUserSelected: boolean = false;
 
   private enteredChatListener$ = new Subscription();
 
   constructor(private messagesService: MessagesService) {
-    this.messagesService.enteredChat.pipe(
+    this.enteredChatListener$ = this.messagesService.enteredChat.pipe(
       map((value) => this.isUserSelected = value),
       filter(value => value),
       map(() => this.currentUser = this.messagesService.currentUserChat),

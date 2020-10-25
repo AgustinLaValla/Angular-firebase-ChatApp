@@ -24,7 +24,7 @@
                 </button>&nbsp;&nbsp;
             </span>
 
-            <span matTooltip="Refresh">
+            <span matTooltip="Refresh" (click)="refreshList()">
                 <button mat-mini-fab color="primary" *ngIf="!showAdd">
                     <mat-icon>refresh</mat-icon>
                 </button>

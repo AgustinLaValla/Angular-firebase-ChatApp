@@ -33,7 +33,7 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
   public loadingSpinner: boolean = false;
   public MyId: string;
   public MyAvatar: any;
-  public currentChatUser: IUser;
+  public currentChatUser: Partial<IUser>;
   public checkFirst: number = 1;
   @ViewChild('scrollMe', { static: false }) public myScroller: ElementRef;
   //Infinite scroll helpers
@@ -50,7 +50,7 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
   private groupChatListener$ = new Subscription();
   private messagesListener$ = new Subscription();
   private groupMessagesListener$ = new Subscription();
-  private pictureSpinnerSubs = new Subscription();
+  private pictureSpinnerSubs$ = new Subscription();
   private newMsgListener$ = new Subscription();
   private firstChatMessageListener = new Subscription();
   private loadingMessagesListener$ = new Subscription();
@@ -60,17 +60,14 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
     this.groupChatListener();
     this.groupMsgFlagListener();
     this.loadingMessagesListener();
+    this.setPictureSpinnerListener();
+    this.setFirstChatListener();
     this.MyAvatar = this.authService.currentUserDetails().photoURL;
-    this.pictureSpinnerSubs = this.messageService.pictureSpinner$.subscribe(value => this.pictureSpinner = value);
-    this.firstChatMessageListener = this.messageService.firstchatMessage$.pipe(
-      filter(value => value),
-      mergeMap(async () => await this.getMessages())
-    ).subscribe();
   };
 
   chatListener() {
     this.chatListener$ = this.messageService.enteredChat.pipe(
-      
+
       map((show) => this.showChat = show),
       filter(show => show),
       tap(() => {
@@ -97,12 +94,22 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
     ).subscribe()
   }
 
+  setFirstChatListener() {
+    this.firstChatMessageListener = this.messageService.firstchatMessage$.pipe(
+      filter(value => value),
+      mergeMap(async () => await this.getMessages())
+    ).subscribe();
+  }
+
+  setPictureSpinnerListener() {
+    this.pictureSpinnerSubs$ = this.messageService.pictureSpinner$.subscribe(value => this.pictureSpinner = value);
+  }
+
   async getMessages() {
     this.loadingSpinner = true;
     this.messageService.loadingMessages.next(true);
     const messageObs = await this.messageService.getAllMessages(this.count);
     this.messagesListener$ = this.newMsgListener$ = messageObs.pipe(
-      tap(console.log),
       filter(messages => !isNullOrUndefined(messages)),
       map(messages => {
         this.loadingSpinner = false;
@@ -123,7 +130,6 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
     const groupMessages$ = await this.messageService.getGroupMessages(this.count);
     groupMessages$.pipe(
       tap((messages) => {
-
         this.loadingSpinner = false;
         this.trackMsgCount = 0;
         this.shouldLoad = true;
@@ -169,7 +175,7 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
     this.dialogRef.closeAll();
   }
 
-  
+
   scrollDown() {
     if (this.myScroller) {
       setTimeout(() => {
@@ -237,13 +243,13 @@ export class ChatFeedComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDateFromNow(timeStamp:number): string {
+  getDateFromNow(timeStamp: number): string {
     const date = moment.unix(timeStamp);
     return moment(date).fromNow();
   }
 
   ngOnDestroy() {
-    this.pictureSpinnerSubs.unsubscribe()
+    this.pictureSpinnerSubs$.unsubscribe()
     this.newMsgListener$.unsubscribe();
     this.firstChatMessageListener.unsubscribe();
     this.loadingMessagesListener$.unsubscribe();

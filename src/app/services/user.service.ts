@@ -53,8 +53,10 @@ export class UserService {
     await this.currentUser.updateProfile({ photoURL: downloadURL });
   }
 
-  getAllUsers(): Observable<IUser[]> {
-    return this.afs.collection<IUser>('users').valueChanges().pipe(
+  getAllUsers(limit: number): Observable<IUser[]> {
+    return this.afs.collection<IUser>('users', ref => 
+    ref.limit(limit)
+    ).valueChanges().pipe(
       map(users => users.filter(user => user['email'] != this.currentUser.email))
     );
   }
@@ -96,6 +98,15 @@ export class UserService {
     );
 
 
+  }
+
+  getTotalUsers(): Observable<number> {
+    return this.afs.collection('counter')
+      .doc('-- users counter --')
+      .valueChanges()
+      .pipe(
+        map(resp => resp['totalUsers'])
+      );
   }
 }
 

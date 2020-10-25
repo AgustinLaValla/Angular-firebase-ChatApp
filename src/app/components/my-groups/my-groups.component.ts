@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GroupService } from 'src/app/services/group.service';
 import { MatSnackBar } from '@angular/material';
 import { MessagesService } from 'src/app/services/messages.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
 
@@ -11,25 +11,29 @@ import { isNullOrUndefined } from 'util';
   templateUrl: './my-groups.component.html',
   styleUrls: ['./my-groups.component.css']
 })
-export class MyGroupsComponent implements OnInit {
+export class MyGroupsComponent implements OnInit, OnDestroy {
 
   public showAdd: boolean = false;
   public groupName: string;
   public myGroups: any[] = [];
+  private myGroupsSub$ = new Subscription();
 
-
-  constructor(private groupsService: GroupService, private snack: MatSnackBar, private messagesService: MessagesService) { }
+  constructor(
+    private groupsService: GroupService,
+    private snack: MatSnackBar,
+    private messagesService: MessagesService
+  ) { }
 
   async ngOnInit() {
-    await this.getGroup();
+    await this.getGroups();
   }
 
-  async getGroup() {
-    const groupsObs$: Observable<any> = await this.groupsService.getGroup();
-    groupsObs$.pipe(
+  async getGroups () {
+    const groupsObs$: Observable<any> = await this.groupsService.getGroups();
+    this.myGroupsSub$ = groupsObs$.pipe(
       filter(groups => !isNullOrUndefined(groups)),
       map(groups => this.myGroups = groups)
-    ).subscribe(console.log);
+    ).subscribe();
   };
 
   async createGroup() {
@@ -43,11 +47,17 @@ export class MyGroupsComponent implements OnInit {
     this.showAdd = !this.showAdd;
   }
 
-  refreshList() { }
+ async refreshList() {
+   await this.getGroups();
+  }
 
   openGroup(group) {
     this.groupsService.enterGroup(group);
     this.messagesService.enterChat('closed'); //In case the user are chatting to an other user the chats is closed
+  }
+
+  ngOnDestroy() {
+    this.myGroupsSub$.unsubscribe();
   }
 
 }

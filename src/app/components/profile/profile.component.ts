@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { filter, map, tap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
   public user;
   public nickNameEdit: boolean = false;;
   public newNickName: string;
   public selectedFile: FileList;
   public spinnerToggle: boolean = false;
+  private currentUserSub$ = new Subscription();
 
-  constructor(private userService: UserService, private authService: AuthService) {
+  constructor(
+    private userService: UserService, 
+    private authService: AuthService
+  ) {
     this.currentUserListener();
   }
 
   ngOnInit() { }
 
   currentUserListener() {
-    this.authService.currentUser.pipe(
+    this.currentUserSub$ = this.authService.currentUser.pipe(
       tap(() => this.spinnerToggle = true),
       filter(user => !isNullOrUndefined(user)),
       map(user => this.user = user),
@@ -58,5 +63,8 @@ export class ProfileComponent implements OnInit {
   };
 
 
+  ngOnDestroy() {
+    this.currentUserSub$.unsubscribe();
+  }
 
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import { FriendsService } from './friends.service';
 import { AuthService } from './auth.service';
 import { filter, map } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
@@ -17,20 +15,18 @@ import { Friend } from '../interface/friend.interface';
 export class RequestService {
 
   public requestRef: AngularFirestoreCollection;
-  public firendsRef: AngularFirestoreCollection;
-
+  public friendsRef: AngularFirestoreCollection;
 
   private currentUser: firebase.User;
 
   constructor(
     private afs: AngularFirestore,
     private authService: AuthService,
-    private friendsService: FriendsService,
     private snack: MatSnackBar
   ) {
     this.currentUserStateListener();
     this.requestRef = this.afs.collection<Request>('request');
-    this.firendsRef = this.afs.collection<Friend>('friends')
+    this.friendsRef = this.afs.collection<Friend>('friends')
   }
 
   currentUserStateListener() {
@@ -63,23 +59,22 @@ export class RequestService {
 
 
   async acceptRequest(requester: Friend) {
-    const friendsCollection = await this.firendsRef.ref.where('email', '==', this.currentUser.email).get();
-    if (friendsCollection.empty) {
-      const docRef = await this.firendsRef.add({ email: this.currentUser.email });
-      await this.firendsRef.doc(docRef.id).collection('myfriends').add({ email: requester.email })
-      await this.friendsService.getMyFriends();
+    const friendsCollection = await this.friendsRef.doc(this.currentUser.uid).get().toPromise();
+    if (!friendsCollection.exists) {
+      await this.friendsRef.doc(this.currentUser.uid).set({ email: this.currentUser.email, id: this.currentUser.uid });
+      await this.friendsRef.doc(this.currentUser.uid).collection('myfriends').doc(requester.id).set({ email: requester.email, id: requester.id })
     } else {
-      this.afs.doc(`friends/${friendsCollection.docs[0].id}`).collection('myfriends').add({ email: requester.email });
+      await this.afs.doc(`friends/${friendsCollection.id}`).collection('myfriends').doc(requester.id).set({ email: requester.email, id: requester.id });
     };
 
-    const requesterFriendsColl = await this.firendsRef.ref.where('email', '==', requester.email).get();
-    if (requesterFriendsColl.empty) {
-      const docRef = await this.firendsRef.add({ email: requester.email });
-      await this.firendsRef.doc(docRef.id).collection('myfriends').add({ email: this.currentUser.email });
-      await this.friendsService.getMyFriends();
+    const requesterFriendsColl = await this.friendsRef.doc(requester.id).get().toPromise();
+    if (!requesterFriendsColl.exists) {
+      await this.friendsRef.doc(requester.id).set({ email: requester.email, id: requester.id });
+      await this.friendsRef.doc(requester.id).collection('myfriends').doc(this.currentUser.uid).set({ email: this.currentUser.email, id: this.currentUser.uid });
     } else {
-      this.afs.doc(`friends/${requesterFriendsColl.docs[0].id}`).collection('myfriends').add({ email: this.currentUser.email });
+      await this.afs.doc(`friends/${requesterFriendsColl.id}`).collection('myfriends').doc(this.currentUser.uid).set({ email: this.currentUser.email, id: this.currentUser.uid });
     };
+
 
     await this.deleteRequest(requester);
   };

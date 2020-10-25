@@ -8,13 +8,14 @@ import { Usercreds } from '../interface/usercreds.interface';
 import { map, tap, filter } from 'rxjs/operators';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
+import * as firebase from 'firebase';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  public authState: firebase.User;
+  public authState: firebase.User = null;
 
   public currentUser = new BehaviorSubject<firebase.User>(this.authState);
   public isAuth = new Subject<boolean>();
@@ -25,6 +26,7 @@ export class AuthService {
     private router: Router,
     private snack: MatSnackBar
   ) { }
+
 
   initListener() {
     return this.afa.authState.pipe(
@@ -53,25 +55,25 @@ export class AuthService {
   //Crear cuenta
   async singUp(usercreds: Usercreds) {
     try {
-
       const user = await this.afa.auth.createUserWithEmailAndPassword(usercreds.email, usercreds.password);
       await this.afa.auth.currentUser.updateProfile({ displayName: usercreds.displayname, photoURL: constants.PROFILE_PIC });
-      await this.setUserData(usercreds.email, usercreds.displayname, user.user.photoURL);
+      await this.setUserData(usercreds.email, usercreds.displayname, user.user.photoURL, user.user.uid);
+      await this.incrementUserCounter();
     } catch (error) {
       this.snack.open(error.message, 'Close', { duration: 3000 });
     }
   }
 
   //Set user data into a local user Collection
-  async setUserData(email: string, displayName: string, photoURL: string) {
+  async setUserData(email: string, displayName: string, photoURL: string, id: string) {
 
-    await this.afs.doc(`users/${this.currentUserId}`).set({
+    await this.afs.doc(`users/${id}`).set({
       email: email,
       displayName: displayName,
       photoURL: photoURL,
-      id:this.currentUserId
+      id:id
     });
-    await this.afs.doc<Status>(`status/${this.currentUserId}`).set({
+    await this.afs.doc<Status>(`status/${id}`).set({
       email: email,
       status: 'online'
     });
@@ -79,10 +81,18 @@ export class AuthService {
     this.router.navigate(['']);
   }
 
+  async incrementUserCounter() {
+    const counterDoc = await this.afs.collection('counter').doc('-- users counter --').get().toPromise();
+    if(!counterDoc.exists) {
+      this.afs.collection('counter').doc('-- users counter --').set({totalUsers: 1});
+    } else {
+      this.afs.collection('counter').doc('-- users counter --').update({totalUsers: firebase.firestore.FieldValue.increment(1)});
+    }
+  }
+
   async singIn(usercreds: Usercreds) {
     try {
       await this.afa.auth.signInWithEmailAndPassword(usercreds.email, usercreds.password);
-      // this.router.navigate(['']);
       const status = 'online';
       await this.setUserStatus(status);
 

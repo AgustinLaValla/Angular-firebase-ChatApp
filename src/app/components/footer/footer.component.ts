@@ -13,7 +13,10 @@ export class FooterComponent implements OnInit {
   public picMessage: File;
 
 
-  constructor(private messagesService: MessagesService, private snack:MatSnackBar) { }
+  constructor(
+    private messagesService: MessagesService,
+    private snack: MatSnackBar
+  ) { }
 
   ngOnInit() {
   }
@@ -24,13 +27,13 @@ export class FooterComponent implements OnInit {
       this.newMessage = '';
     };
   };
-  async sendImage(image:File) {
+  async sendImage(image: File) {
     this.picMessage = image;
     if (this.picMessage && this.picMessage.type.indexOf('image') >= 0) {
       this.messagesService.pictureSpinner$.next(true);
       await this.messagesService.addPictureImage(this.picMessage);
-    } else { 
-      this.snack.open('Only image files are allowed', 'OK', { duration:3000 });
+    } else {
+      this.snack.open('Only image files are allowed', 'OK', { duration: 3000 });
     };
   };
 

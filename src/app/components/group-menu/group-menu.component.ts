@@ -20,7 +20,8 @@ export class GroupMenuComponent implements OnInit, OnDestroy {
   public currentGroup: any;
   public isGroup: boolean = false;
   public isOwner: boolean = false;
-  private refreshListener$ = new Subscription()
+  private refreshListener$ = new Subscription();
+  private enteredGroupSubs$ = new Subscription();
 
   constructor(
     public groupService: GroupService,
@@ -35,7 +36,7 @@ export class GroupMenuComponent implements OnInit, OnDestroy {
   }
 
   getGroup() {
-    this.groupService.enteredGroup.pipe(
+    this.enteredGroupSubs$ = this.groupService.enteredGroup.pipe(
       filter(value => !isNullOrUndefined(value)),
       tap(() => {
         this.currentGroup = this.groupService.currentGroup;
@@ -46,9 +47,8 @@ export class GroupMenuComponent implements OnInit, OnDestroy {
   }
 
   refreshListener() {
-    this.groupService.refreshGroup().pipe(
-      filter(groupData => !isNullOrUndefined(groupData)),
-      tap(console.log),
+    this.refreshListener$ = this.groupService.refreshGroup().pipe(
+      filter(groupData => groupData !== null && groupData !== undefined),
       map((groupData) => this.currentGroup = groupData[0])
     ).subscribe();
   }
@@ -93,6 +93,7 @@ export class GroupMenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.refreshListener$.unsubscribe();
+    this.enteredGroupSubs$.unsubscribe();
   }
 
 }

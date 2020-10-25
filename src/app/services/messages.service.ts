@@ -9,14 +9,14 @@ import { AuthService } from './auth.service';
 import { isNullOrUndefined } from 'util';
 import { IUser } from '../interface/user.interface';
 import { Message } from '../interface/message.interface';
-import { Notification } from '../interface/notification.interface';
+import { NotificationsService } from './notifications.service';
 
 
 @Injectable({ providedIn: 'root' })
 export class MessagesService {
 
   public enteredChat = new BehaviorSubject<boolean>(false);
-  public currentUserChat: IUser;
+  public currentUserChat: Partial<IUser>;
   public firsDocId: string;
   public secondDocId: string;
   public currentUserEmail: string;
@@ -31,7 +31,9 @@ export class MessagesService {
     private authService: AuthService,
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
-    private groupService: GroupService) {
+    private groupService: GroupService,
+    private notificationsService: NotificationsService
+    ) {
     this.currentUserStateListener();
   }
 
@@ -43,11 +45,12 @@ export class MessagesService {
     ).subscribe();
   };
 
-  enterChat(user: IUser | 'closed') {
+  enterChat(user: Partial<IUser> | 'closed') {
     if (user != 'closed') {
       this.currentUserChat = user;
       this.enteredChat.next(true);
     } else {
+      this.currentUserChat = null;
       this.enteredChat.next(false);
     }
   }
@@ -73,20 +76,20 @@ export class MessagesService {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
-      // this.firstchatMessage$.next(true);
-      // this.pictureSpinner$.next(false);
-
       await this.afs.collection('conversations').doc(firstDoc.id).update({ messageId: messageDoc.id });
       await this.afs.collection('conversations').doc(secondDoc.id).update({ messageId: messageDoc.id });
 
-      await this.addNotifications();
+      this.firstchatMessage$.next(true);
+      this.pictureSpinner$.next(false);
+
+      await this.notificationsService.addMessageNotification(this.currentUserChat);
     } else {
       await this.afs.collection('messages').doc(conversation.docs[0].data().messageId).collection<Message>('msg').add({
         message: newMsg,
         sentby: this.currentUser.email,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
-      await this.addNotifications();
+      await this.notificationsService.addMessageNotification(this.currentUserChat);
     }
   };
 
@@ -151,7 +154,7 @@ export class MessagesService {
     let picName = `picture${randomId}`; //Picture id
     const uploadTask = this.storage.upload('groupPicmessages/' + picName, pic); //Create or update document
     uploadTask.then(() => {
-      this.storage.ref('groupPicmessages/' + picName).getDownloadURL() //Obtengo la url imagen
+      this.storage.ref('groupPicmessages/' + picName).getDownloadURL() //Retrieve image url
         .subscribe(imgUrl => {
           downloadURL = 'picMsg' + imgUrl //Asigno url de la imagen como valor de la variable y le agrego una bandera
           this.storage.ref('groupPicmessages/' + picName).getMetadata().subscribe(metadata => {//Obtengo un observable con metadatos
@@ -168,32 +171,5 @@ export class MessagesService {
     }).catch(error => console.log('Upload failed', error));
   }
 
-  //AddNotifications
-  async addNotifications(): Promise<void> {
-    this.afs.collection('notifications').add({
-      receiver: this.currentUserChat.email,
-      receiverName: this.currentUserChat.displayName,
-      sender: this.currentUser.email,
-      senderPic: this.currentUser.photoURL,
-      type: 'message',
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-
-  //Get My notifications
-  getMyNotificactions(): Observable<Notification[]> {
-    if (this.currentUser) {
-      return this.afs.collection<Notification>('notifications', ref => ref.where('receiver', '==', this.currentUser.email)).valueChanges();
-    };
-    return of([]);
-  }
-
-  //clearing notifications
-  async clearNotifications(): Promise<void> {
-    const notifications = await this.afs.collection<Notification>('notifications')
-      .ref.where('sender', '==', this.currentUserChat.email).get();
-    if (!notifications.empty) {
-      notifications.docs.map(notification => notification.ref.delete());
-    };
-  }
+  
 }

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RequestService } from 'src/app/services/request.service';
 import { MatSnackBar } from '@angular/material';
 import { UserService } from 'src/app/services/user.service';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
+import { IUser } from 'src/app/interface/user.interface';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -11,9 +13,10 @@ import { isNullOrUndefined } from 'util';
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.css']
 })
-export class RequestComponent implements OnInit {
+export class RequestComponent implements OnInit, OnDestroy {
 
-  public requests: any;
+  public requests: IUser[];
+  private requestsSub$ = new Subscription();
 
   constructor(
     private requestService: RequestService,
@@ -26,7 +29,7 @@ export class RequestComponent implements OnInit {
   };
 
   getRequests() {
-    this.requestService.getMyRequest().pipe(
+    this.requestsSub$ = this.requestService.getMyRequest().pipe(
       filter(request => !isNullOrUndefined(request)),
       switchMap(request => this.userService.getUsers(request).pipe(
         filter(users => !isNullOrUndefined(users)),
@@ -44,5 +47,9 @@ export class RequestComponent implements OnInit {
     await this.requestService.deleteRequest(request);
     this.snack.open('Request Ignored', 'Okay', { duration: 3000 });
   };
+
+  ngOnDestroy() {
+    this.requestsSub$.unsubscribe()
+  }
 };
 
