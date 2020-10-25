@@ -56,7 +56,7 @@ export class FriendsService {
   async getFriendsProfiles(emails: Friend[]) {
     let friendsProfiles: IUser[] = [];
 
-    emails.map(async userEmail => {
+    await emails.map(async userEmail => {
       const profiles = await this.afs.collection<IUser>('users').ref.where('email', '==', userEmail.email).get();
       if (!profiles.empty) {
         friendsProfiles.push(profiles.docs[0].data() as IUser);

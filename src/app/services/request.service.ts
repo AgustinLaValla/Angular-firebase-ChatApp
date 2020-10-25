@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
 import { AuthService } from './auth.service';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
 import { of, Observable } from 'rxjs';
 import { Request } from '../interface/request.interface';
@@ -54,7 +54,7 @@ export class RequestService {
       return this.afs.collection<Request>('request', ref => ref.where('receiver', '==', this.currentUser.email))
         .valueChanges();
     };
-    return of([]);
+    return of(null);
   };
 
 

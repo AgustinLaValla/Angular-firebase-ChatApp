@@ -3,7 +3,7 @@ import { UserService } from 'src/app/services/user.service';
 import { FriendsService } from 'src/app/services/friends.service';
 import { Subscription } from 'rxjs';
 import { MessagesService } from 'src/app/services/messages.service';
-import { map, filter, mergeMap } from 'rxjs/operators';
+import { map, filter, mergeMap, concatMap } from 'rxjs/operators';
 import { Friend } from 'src/app/interface/friend.interface';
 import { IUser } from 'src/app/interface/user.interface';
 import { Status } from 'src/app/interface/status.interface';
@@ -29,24 +29,24 @@ export class MyFriendsComponent implements OnInit, OnDestroy {
   private statusListener$ = new Subscription();
   private friendList$ = new Subscription();
 
-  async ngOnInit() {
-    await this.getMyFriends();
+  ngOnInit() {
+    this.getMyFriends();
     this.statusListener();
   };
 
-  async getMyFriends() {
+  getMyFriends() {
     this.friendList$ = this.friendsService.getMyFriends().pipe(
       filter(friends => friends !== null && friends !== undefined),
-      mergeMap(async (emails: Friend[]) => await this.friendsService.getFriendsProfiles(emails)),
+      concatMap(async(emails: Friend[]) => await this.friendsService.getFriendsProfiles(emails)),
       map((friendsDetails) => this.friends = friendsDetails),
-      mergeMap(() => this.userService.updateUserStatuses())
+      concatMap(() => this.userService.updateUserStatuses())
     ).subscribe();
   };
 
   statusListener() {
     this.statusListener$ = this.userService.statusUpdate.pipe(
       filter(value => value === 'StatusUpdated'),
-      mergeMap(async () => await this.userService.getUsersStatus(this.friends)),
+      concatMap(async () => await this.userService.getUsersStatus(this.friends)),
       map((statusses) => this.statusses = statusses)
     ).subscribe();
   };

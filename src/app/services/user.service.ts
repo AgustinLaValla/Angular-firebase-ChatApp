@@ -83,11 +83,13 @@ export class UserService {
 
 
   async getUsersStatus(users: Array<Friend | IUser>) {
+    console.log({users})
     let friendStatus: Status[] = [];
     users.map(async (user, idx) => {
       const status = await this.afs.collection<Status>('status').ref.where('email', '==', user.email).get();
       friendStatus.push(status.docs[0].data() as Status);
     });
+    console.log({friendStatus});
     return friendStatus;
   };
 

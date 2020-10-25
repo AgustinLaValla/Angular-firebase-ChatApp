@@ -10,11 +10,12 @@
                     Sing up and enjoy!
                 </mat-card-subtitle>
                 <mat-card-content>
-                    <form [formGroup]="usercreds"> 
+                    <form [formGroup]="usercreds" (ngSubmit)="createAnAccount()"> 
                     <mat-form-field class="input-width">
-                        <input matInput 
-                               placeholder="Email"
-                               formControlName="email" 
+                        <input 
+                            matInput 
+                            placeholder="Email"
+                            formControlName="email" 
                         >
                         <mat-error *ngIf="usercreds.get('email').hasError('pattern')">
                             Please, enter a valid email adress
@@ -25,29 +26,35 @@
                     </mat-form-field>
 
                     <mat-form-field class="input-width">
-                        <input matInput 
-                              type="password"
-                              placeholder="password"
-                              formControlName="password" 
-                              >
+                        <input 
+                            matInput 
+                            type="password"
+                            placeholder="password"
+                            formControlName="password" 
+                        >
                         <mat-error *ngIf="usercreds.get('password').hasError('required')">
                             Password is <strong>required</strong>
                         </mat-error>
                     </mat-form-field>
                     <mat-form-field class="input-width">
-                        <input matInput 
-                              placeholder="Nickname"
-                              formControlName="displayname" 
-                              >
+                        <input 
+                            matInput 
+                            placeholder="Nickname"
+                            formControlName="displayname" 
+                        >
                         <mat-error *ngIf="usercreds.get('displayname').hasError('required')">
                             Nickname is <strong>required</strong>
                         </mat-error>
                     </mat-form-field>
+                    <button 
+                        type="submit"
+                        mat-raised-button color="primary" style="width:80%" 
+                        [disabled]="!usercreds.valid"
+                    >                                     
+                        Sing up
+                    </button >
                     </form>
                 </mat-card-content>
-                <button (click)="createAnAccount()" mat-raised-button color="primary" style="width:80%" [disabled]="!usercreds.valid"
-                >                                     Sing up
-                </button >
                 <p>Are you already a member? <a (click)="goToLoginPage()" >Click Here</a> to register </p>
             </mat-card>
         </div>
