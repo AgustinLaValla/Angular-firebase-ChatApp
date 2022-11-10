@@ -28,7 +28,7 @@
     "@angular/platform-browser-dynamic": "~8.2.8",
     "@angular/router": "~8.2.8",
     "@types/lodash": "^4.14.149",
-    "electron": "^7.1.9",
+    "electron": "^18.3.7",
     "electron-packager": "^14.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-winstaller": "^4.0.0",
